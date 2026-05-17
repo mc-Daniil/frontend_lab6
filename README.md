@@ -6,7 +6,7 @@
 - [TodoForm.vue](1/src/components/TodoForm.vue)
 - [TodoItem.vue](1/src/components/TodoItem.vue)
 
-# [Лаба Advanced Vue](2/)
+# [Лаба VeeValidate](2/)
 Модифицированные файлы:
 - [main.ts](2/src/main.ts)
 - [App.vue](2/src/App.vue)
@@ -14,4 +14,4 @@
 - [LicenseModal.vue](2/src/components/LicenseModal.vue)
 - [BaseInput.vue](2/src/components/BaseInput.vue)
 - [BaseCheckbox.vue](2/src/components/BaseCheckbox.vue)
-- Треббования к паролю появляются, если начать вводить пароль
+- Требования к паролю появляются, если начать вводить пароль
