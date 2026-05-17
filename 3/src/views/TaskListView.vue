@@ -1,42 +1,12 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
-import { getTasks, saveTasks, type Task } from '../storage/tasksStorage'
+import { storeToRefs } from 'pinia'
+import { useTasksStore } from '../stores/TasksStore'
 
-const tasks = ref<Task[]>([])
+const tasksStore = useTasksStore()
 
-const hasTasks = computed(() => {
-  return tasks.value.length > 0
-})
-
-const completedTasksCount = computed(() => {
-  return tasks.value.filter((task) => task.completed).length
-})
-
-onMounted(() => {
-  tasks.value = getTasks()
-})
-
-function toggleTask(taskId: number): void {
-  tasks.value = tasks.value.map((task) => {
-    if (task.id !== taskId) {
-      return task
-    }
-
-    return {
-      ...task,
-      completed: !task.completed
-    }
-  })
-
-  saveTasks(tasks.value)
-}
-
-function deleteTask(taskId: number): void {
-  tasks.value = tasks.value.filter((task) => task.id !== taskId)
-
-  saveTasks(tasks.value)
-}
+const { tasks, hasTasks, completedTasksCount } = storeToRefs(tasksStore)
+const { toggleTaskCompleted, deleteTask } = tasksStore
 </script>
 
 <template>
@@ -66,7 +36,7 @@ function deleteTask(taskId: number): void {
               <input
                 type="checkbox"
                 :checked="task.completed"
-                @change="toggleTask(task.id)"
+                @change="toggleTaskCompleted(task.id)"
               />
 
               <span>

@@ -1,49 +1,38 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { RouterLink } from 'vue-router'
-import { getTasks, saveTasks } from '../storage/tasksStorage'
+import { useTasksStore } from '../stores/TasksStore'
 
 const props = defineProps<{
   id: string
 }>()
 
+const tasksStore = useTasksStore()
+
+const { toggleTaskCompleted } = tasksStore
+
 const isChanged = ref<boolean>(false)
-const isFound = ref<boolean>(false)
 
 const taskId = computed(() => {
   return Number(props.id)
 })
 
-onMounted(() => {
-  const tasks = getTasks()
-
-  const updatedTasks = tasks.map((task) => {
-    if (task.id !== taskId.value) {
-      return task
-    }
-
-    isFound.value = true
-
-    return {
-      ...task,
-      completed: !task.completed
-    }
-  })
-
-  saveTasks(updatedTasks)
-
-  isChanged.value = true
-})
+watch(
+  () => props.id,
+  () => {
+    toggleTaskCompleted(taskId.value)
+    isChanged.value = true
+  },
+  {
+    immediate: true
+  }
+)
 </script>
 
 <template>
   <section class="card">
-    <h2 v-if="isChanged && isFound">
+    <h2 v-if="isChanged">
       Task status has been changed
-    </h2>
-
-    <h2 v-else-if="isChanged && !isFound">
-      Task not found
     </h2>
 
     <RouterLink class="back-link" :to="{ name: 'tasks' }">

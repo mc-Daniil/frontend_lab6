@@ -1,11 +1,15 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { RouterLink } from 'vue-router'
-import { getTasks, saveTasks } from '../storage/tasksStorage'
+import { useTasksStore } from '../stores/TasksStore'
 
 const props = defineProps<{
   id: string
 }>()
+
+const tasksStore = useTasksStore()
+
+const { deleteTask } = tasksStore
 
 const isDeleted = ref<boolean>(false)
 
@@ -13,15 +17,16 @@ const taskId = computed(() => {
   return Number(props.id)
 })
 
-onMounted(() => {
-  const tasks = getTasks()
-
-  const updatedTasks = tasks.filter((task) => task.id !== taskId.value)
-
-  saveTasks(updatedTasks)
-
-  isDeleted.value = true
-})
+watch(
+  () => props.id,
+  () => {
+    deleteTask(taskId.value)
+    isDeleted.value = true
+  },
+  {
+    immediate: true
+  }
+)
 </script>
 
 <template>

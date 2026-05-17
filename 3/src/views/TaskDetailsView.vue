@@ -1,31 +1,25 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
-import { getTasks, type Task } from '../storage/tasksStorage'
+import { storeToRefs } from 'pinia'
+import { useTasksStore } from '../stores/TasksStore'
 
 const props = defineProps<{
   id: string
 }>()
 
 const router = useRouter()
+const tasksStore = useTasksStore()
 
-const task = ref<Task | null>(null)
+const { getTaskById } = storeToRefs(tasksStore)
 
 const taskId = computed(() => {
   return Number(props.id)
 })
 
-watch(
-  () => props.id,
-  () => {
-    const tasks = getTasks()
-
-    task.value = tasks.find((currentTask) => currentTask.id === taskId.value) ?? null
-  },
-  {
-    immediate: true
-  }
-)
+const task = computed(() => {
+  return getTaskById.value(taskId.value)
+})
 
 async function goToCompletePage(): Promise<void> {
   await router.push({
@@ -88,7 +82,7 @@ async function goToDeletePage(): Promise<void> {
       <h2>Задача не найдена</h2>
 
       <p class="empty">
-        В LocalStorage нет задачи с id {{ id }}.
+        В Pinia state нет задачи с id {{ id }}.
       </p>
     </div>
 

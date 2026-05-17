@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
-import { createTask, getTasks, saveTasks } from '../storage/tasksStorage'
+import { useTasksStore } from '../stores/TasksStore'
 
 const router = useRouter()
+const tasksStore = useTasksStore()
+
+const { addTask } = tasksStore
 
 const taskTitle = ref<string>('')
 const errorMessage = ref<string>('')
@@ -12,7 +15,7 @@ const isSubmitDisabled = computed(() => {
   return !taskTitle.value.trim()
 })
 
-async function addTask(): Promise<void> {
+async function submitTask(): Promise<void> {
   const title = taskTitle.value.trim()
 
   if (!title) {
@@ -20,12 +23,7 @@ async function addTask(): Promise<void> {
     return
   }
 
-  const tasks = getTasks()
-  const newTask = createTask(title, tasks)
-
-  tasks.push(newTask)
-
-  saveTasks(tasks)
+  const newTask = addTask(title)
 
   taskTitle.value = ''
   errorMessage.value = ''
@@ -43,7 +41,7 @@ async function addTask(): Promise<void> {
   <section class="card">
     <h2>Добавить задачу</h2>
 
-    <form class="form" @submit.prevent="addTask">
+    <form class="form" @submit.prevent="submitTask">
       <label for="task-title">
         Название задачи
       </label>
